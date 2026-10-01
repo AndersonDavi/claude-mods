@@ -1,11 +1,11 @@
 {
   "name": "usage-weather",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "A weather forecast for your Claude Code usage: context, cost, cache and plan limits above the prompt. 8 languages, any time zone.",
   "author": { "name": "AndersonDavi" },
   "homepage": "https://github.com/AndersonDavi/claude-mods/tree/main/usage-weather",
   "repository": "https://github.com/AndersonDavi/claude-mods",
   "license": "Apache-2.0",
-  "keywords": ["usage", "context", "cost", "rate-limits", "statusline", "i18n"],
+  "keywords": ["usage", "context", "cost", "rate-limits", "statusline", "i18n", "themes"],
   "types": "./types/index.d.ts"
 }

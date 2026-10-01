@@ -48,7 +48,9 @@ Everything is one command. Words can come in any order; one unknown word changes
 /usage-weather ja                    language
 /usage-weather Asia/Tokyo            time zone
 /usage-weather America/Bogota es     time zone + language
+/usage-weather synthwave             color theme
 /usage-weather mini                  one-row view (full | mini | off)
+/usage-weather themes                list color themes
 /usage-weather zones                 list time zones
 /usage-weather languages             list languages
 ```
@@ -69,6 +71,15 @@ Settings are saved and remembered across sessions. The default language is Engli
 Chinese, Japanese and Korean labels are aligned by display width. English and Spanish show times as AM/PM, the rest as 24 h.
 
 Missing yours? A language is one table entry: see [CONTRIBUTING](../CONTRIBUTING.md).
+
+### Themes
+
+12 color themes, saved like the other settings: `default` (your terminal's own colors), `light` (for light backgrounds), `mono` (no color: weight and inversion), `contrast` (color-blind safe), `synthwave`, `neon`, `violet`, `ocean`, `sunset`, `forest`, `candy`, `dracula`. Themes use 24-bit colors; on a terminal without them the nearest colors are used.
+
+```text
+/usage-weather neon
+/usage-weather synthwave es
+```
 
 ### Time zones
 

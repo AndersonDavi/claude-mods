@@ -48,9 +48,11 @@ Todo es un solo comando. Las palabras pueden ir en cualquier orden; si una no se
 /usage-weather ja                    idioma
 /usage-weather Asia/Tokyo            zona horaria
 /usage-weather America/Bogota es     zona horaria + idioma
+/usage-weather synthwave             tema de color
 /usage-weather mini                  vista de una fila (completo | mini | oculto)
 /usage-weather zonas                 lista de zonas horarias
 /usage-weather idiomas               lista de idiomas
+/usage-weather temas                 lista de temas de color
 ```
 
 La configuración se guarda y se recuerda entre sesiones. El idioma por defecto es inglés; la zona horaria se detecta del sistema. La primera vez, un mensaje corto explica cómo cambiarlos (y sugiere el idioma de tu sistema si es uno de los ocho).
@@ -62,6 +64,15 @@ La configuración se guarda y se recuerda entre sesiones. El idioma por defecto 
 Las etiquetas en chino, japonés y coreano se alinean según su ancho real. Español e inglés muestran la hora en am/pm; el resto en 24 h.
 
 ¿Falta el tuyo? Un idioma es una sola entrada en una tabla: mira [CONTRIBUTING](../CONTRIBUTING.md) (hay un resumen en español al final).
+
+### Temas
+
+12 temas de color, que se guardan como el resto de la configuración: `default` (los colores de tu terminal), `light` (para fondos claros), `mono` (sin color: negrita e inversión), `contrast` (apto para daltonismo), `synthwave`, `neon`, `violet`, `ocean`, `sunset`, `forest`, `candy` y `dracula`. Usan colores de 24 bits; en una terminal que no los soporte se aproximan.
+
+```text
+/usage-weather neon
+/usage-weather synthwave es
+```
 
 ### Zonas horarias
 

@@ -13,7 +13,10 @@ export type Acumulado = {
 export type Muestra = { resetsAt: string; t: number; pct: number }
 export type Modo = 'completo' | 'mini' | 'oculto'
 export type Idioma = 'es' | 'en' | 'pt' | 'fr' | 'de' | 'zh' | 'ja' | 'ko'
-export type Ajustes = { modo: Modo; idioma: Idioma; zona: string }
+export type Tema =
+  | 'default' | 'light' | 'mono' | 'contrast' | 'synthwave' | 'neon'
+  | 'violet' | 'ocean' | 'sunset' | 'forest' | 'candy' | 'dracula'
+export type Ajustes = { modo: Modo; idioma: Idioma; zona: string; tema: Tema }
 
 declare module 'claude-code' {
   interface PluginState {

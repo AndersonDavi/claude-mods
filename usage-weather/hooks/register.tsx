@@ -15,7 +15,7 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register } from 'claude-code'
 
-import type { Acumulado, Ajustes, Idioma, Lectura, Limite, Modo, Muestra } from '../types'
+import type { Acumulado, Ajustes, Idioma, Lectura, Limite, Modo, Muestra, Tema } from '../types'
 
 const HISTORIAL = 12
 const ANCHO_BARRA = 10
@@ -24,7 +24,7 @@ const SESIONES_GUARDADAS = 30
 const RITMO_MIN_MS = 5 * 60_000
 
 const CERO: Acumulado = { duracionApiMs: 0, entrada: 0, cacheLeida: 0, cacheEscrita: 0, turnos: 0 }
-const AJUSTES_INICIALES: Ajustes = { modo: 'completo', idioma: 'en', zona: 'UTC' }
+const AJUSTES_INICIALES: Ajustes = { modo: 'completo', idioma: 'en', zona: 'UTC', tema: 'default' }
 
 const lecturas = atom({ plugin: 'usage-weather', key: 'lecturas' } as const, [] as Lectura[])
 const limites = atom({ plugin: 'usage-weather', key: 'limites' } as const, [] as Limite[])
@@ -53,6 +53,7 @@ interface Textos {
   lblIdioma: string
   lblZona: string
   lblVista: string
+  lblTema: string
   vistas: Record<Modo, string>
   zonasNota: (iana: boolean) => string
   invalido: (t: string) => string
@@ -79,10 +80,11 @@ const IDIOMAS: Record<Idioma, Textos> = {
     lblIdioma: 'Idioma',
     lblZona: 'Zona horaria',
     lblVista: 'Vista',
+    lblTema: 'Tema',
     vistas: { completo: 'completo', mini: 'mini', oculto: 'oculto' },
     zonasNota: iana => `También: UTC-5, +5:30${iana ? ' o cualquier nombre IANA (ej. Europe/Zurich)' : ''}`,
     invalido: t => `No reconozco "${t}". Prueba /usage-weather zonas o /usage-weather idiomas.`,
-    uso: 'Uso: /usage-weather [zona] [idioma] [completo|mini|oculto] · zonas · idiomas',
+    uso: 'Uso: /usage-weather [zona] [idioma] [completo|mini|oculto] [theme] · zonas · idiomas',
     sugerir: 'Para español:',
   },
   en: {
@@ -103,10 +105,11 @@ const IDIOMAS: Record<Idioma, Textos> = {
     lblIdioma: 'Language',
     lblZona: 'Time zone',
     lblVista: 'View',
+    lblTema: 'Theme',
     vistas: { completo: 'full', mini: 'mini', oculto: 'off' },
     zonasNota: iana => `Also: UTC-5, +5:30${iana ? ', or any IANA name (e.g. Europe/Zurich)' : ''}`,
     invalido: t => `Unrecognized "${t}". Try /usage-weather zones or /usage-weather languages.`,
-    uso: 'Usage: /usage-weather [timezone] [language] [full|mini|off] · zones · languages',
+    uso: 'Usage: /usage-weather [timezone] [language] [full|mini|off] [theme] · zones · languages',
     sugerir: 'For English:',
   },
   pt: {
@@ -127,10 +130,11 @@ const IDIOMAS: Record<Idioma, Textos> = {
     lblIdioma: 'Idioma',
     lblZona: 'Fuso horário',
     lblVista: 'Vista',
+    lblTema: 'Tema',
     vistas: { completo: 'completo', mini: 'mini', oculto: 'oculto' },
     zonasNota: iana => `Também: UTC-5, +5:30${iana ? ' ou qualquer nome IANA (ex.: Europe/Zurich)' : ''}`,
     invalido: t => `Não reconheço "${t}". Tente /usage-weather zonas ou /usage-weather idiomas.`,
-    uso: 'Uso: /usage-weather [fuso] [idioma] [completo|mini|oculto] · zonas · idiomas',
+    uso: 'Uso: /usage-weather [fuso] [idioma] [completo|mini|oculto] [theme] · zonas · idiomas',
     sugerir: 'Para português:',
   },
   fr: {
@@ -151,10 +155,11 @@ const IDIOMAS: Record<Idioma, Textos> = {
     lblIdioma: 'Langue',
     lblZona: 'Fuseau horaire',
     lblVista: 'Affichage',
+    lblTema: 'Thème',
     vistas: { completo: 'complet', mini: 'mini', oculto: 'masqué' },
     zonasNota: iana => `Aussi : UTC-5, +5:30${iana ? ', ou tout nom IANA (ex. Europe/Zurich)' : ''}`,
     invalido: t => `"${t}" non reconnu. Essayez /usage-weather zones ou /usage-weather languages.`,
-    uso: 'Usage : /usage-weather [fuseau] [langue] [complet|mini|masqué] · zones · languages',
+    uso: 'Usage : /usage-weather [fuseau] [langue] [complet|mini|masqué] [theme] · zones · languages',
     sugerir: 'En français :',
   },
   de: {
@@ -175,10 +180,11 @@ const IDIOMAS: Record<Idioma, Textos> = {
     lblIdioma: 'Sprache',
     lblZona: 'Zeitzone',
     lblVista: 'Ansicht',
+    lblTema: 'Design',
     vistas: { completo: 'voll', mini: 'mini', oculto: 'aus' },
     zonasNota: iana => `Auch: UTC-5, +5:30${iana ? ' oder jeder IANA-Name (z. B. Europe/Zurich)' : ''}`,
     invalido: t => `"${t}" nicht erkannt. Versuche /usage-weather zones oder /usage-weather languages.`,
-    uso: 'Nutzung: /usage-weather [zeitzone] [sprache] [voll|mini|aus] · zones · languages',
+    uso: 'Nutzung: /usage-weather [zeitzone] [sprache] [voll|mini|aus] [theme] · zones · languages',
     sugerir: 'Auf Deutsch:',
   },
   zh: {
@@ -199,10 +205,11 @@ const IDIOMAS: Record<Idioma, Textos> = {
     lblIdioma: '语言',
     lblZona: '时区',
     lblVista: '视图',
+    lblTema: '主题',
     vistas: { completo: '完整', mini: '迷你', oculto: '隐藏' },
     zonasNota: iana => `也可用：UTC-5、+5:30${iana ? '，或任意 IANA 名称（如 Europe/Zurich）' : ''}`,
     invalido: t => `无法识别 "${t}"。试试 /usage-weather zones 或 /usage-weather languages。`,
-    uso: '用法：/usage-weather [时区] [语言] [完整|mini|隐藏] · zones · languages',
+    uso: '用法：/usage-weather [时区] [语言] [完整|mini|隐藏] [theme] · zones · languages',
     sugerir: '中文：',
   },
   ja: {
@@ -223,10 +230,11 @@ const IDIOMAS: Record<Idioma, Textos> = {
     lblIdioma: '言語',
     lblZona: 'タイムゾーン',
     lblVista: '表示',
+    lblTema: 'テーマ',
     vistas: { completo: 'フル', mini: 'ミニ', oculto: '非表示' },
     zonasNota: iana => `他に：UTC-5、+5:30${iana ? '、または任意の IANA 名 (例 Europe/Zurich)' : ''}`,
     invalido: t => `"${t}" を認識できません。/usage-weather zones か /usage-weather languages を試してください。`,
-    uso: '使い方：/usage-weather [タイムゾーン] [言語] [フル|mini|非表示] · zones · languages',
+    uso: '使い方：/usage-weather [タイムゾーン] [言語] [フル|mini|非表示] [theme] · zones · languages',
     sugerir: '日本語は：',
   },
   ko: {
@@ -247,10 +255,11 @@ const IDIOMAS: Record<Idioma, Textos> = {
     lblIdioma: '언어',
     lblZona: '시간대',
     lblVista: '보기',
+    lblTema: '테마',
     vistas: { completo: '전체', mini: '미니', oculto: '숨김' },
     zonasNota: iana => `또는: UTC-5, +5:30${iana ? ', 또는 모든 IANA 이름 (예: Europe/Zurich)' : ''}`,
     invalido: t => `"${t}"을(를) 인식하지 못했습니다. /usage-weather zones 또는 /usage-weather languages 를 시도해 보세요.`,
-    uso: '사용법: /usage-weather [시간대] [언어] [전체|mini|숨김] · zones · languages',
+    uso: '사용법: /usage-weather [시간대] [언어] [전체|mini|숨김] [theme] · zones · languages',
     sugerir: '한국어:',
   },
 }
@@ -273,6 +282,7 @@ for (const idioma of CODIGOS) {
     MODOS[nombre.toLowerCase()] = modo as Modo
   }
 }
+const PALABRAS_TEMAS = ['themes', 'theme', 'temas', 'tema', 'colors', 'colours', 'colores']
 const PALABRAS_AYUDA = ['help', 'ayuda', 'ajuda', 'aide', 'hilfe', '?', '-h', '--help']
 const PALABRAS_ZONAS = ['zones', 'zone', 'zonas', 'zona', 'tz', 'timezones', 'timezone']
 const PALABRAS_IDIOMAS = ['languages', 'language', 'idiomas', 'idioma', 'lang', 'langs']
@@ -413,23 +423,64 @@ function textoIdiomas() {
   return CODIGOS.map(c => `${c}  ${IDIOMAS[c].nombre}`).join('\n')
 }
 
+// ───────────────────────────── Themes ─────────────────────────────
+
+// How one role is drawn. `color` is a raw color (hex) or an ANSI name; mono
+// themes use weight and inversion instead of color.
+type Estilo = { color?: string; bold?: boolean; inverse?: boolean }
+type Paleta = { ok: Estilo; warn: Estilo; bad: Estilo; costo: Estilo; api: Estilo; neutro: Estilo }
+
+const paleta = (ok: string, warn: string, bad: string, costo: string, api: string, neutro = 'gray'): Paleta => ({
+  ok: { color: ok }, warn: { color: warn }, bad: { color: bad }, costo: { color: costo }, api: { color: api }, neutro: { color: neutro },
+})
+
+// The first theme uses the terminal's own ANSI colors, so it follows its palette.
+const TEMAS: Record<Tema, Paleta> = {
+  default: paleta('green', 'yellow', 'red', 'cyan', 'magenta'),
+  light: paleta('#0a7d2c', '#9a5b00', '#c4001a', '#0b6a8a', '#8a2a9e', '#666666'),
+  mono: {
+    ok: {}, warn: { bold: true }, bad: { bold: true, inverse: true }, costo: { bold: true }, api: {}, neutro: {},
+  },
+  // Okabe-Ito colors: told apart with every common kind of color blindness.
+  contrast: paleta('#56b4e9', '#f0e442', '#d55e00', '#ffffff', '#cc79a7', '#aaaaaa'),
+  synthwave: paleta('#72f1b8', '#fede5d', '#ff3a8c', '#36f9f6', '#ff7edb', '#8f7fb8'),
+  neon: paleta('#39ff14', '#fff200', '#ff073a', '#00e5ff', '#ff00ff', '#7a7a9a'),
+  violet: paleta('#b794f6', '#f0abfc', '#ff5c8a', '#a78bfa', '#e879f9', '#8b7fb0'),
+  ocean: paleta('#5eead4', '#fde68a', '#fb7185', '#38bdf8', '#818cf8', '#7b8fa6'),
+  sunset: paleta('#ffd166', '#ff9a3c', '#ef476f', '#ffb4a2', '#c77dff', '#a8878a'),
+  forest: paleta('#8bd450', '#e6c94a', '#e5603f', '#5fc9a0', '#b6a06a', '#7e8f7a'),
+  candy: paleta('#a8e6cf', '#ffd3b6', '#ff8b94', '#a0d8ef', '#d4a5ff', '#b0a8b9'),
+  dracula: paleta('#50fa7b', '#f1fa8c', '#ff5555', '#8be9fd', '#bd93f9', '#6272a4'),
+}
+const NOMBRES_TEMAS = Object.keys(TEMAS) as Tema[]
+
+function resolverTema(texto: string): Tema | undefined {
+  const p = texto.toLowerCase()
+  return (NOMBRES_TEMAS as string[]).includes(p) ? (p as Tema) : undefined
+}
+
+function textoTemas() {
+  return NOMBRES_TEMAS.join(', ')
+}
+
 function ajustesValidos(x: unknown): Ajustes | undefined {
   if (!x || typeof x !== 'object') return undefined
   const a = x as Partial<Ajustes>
   const zona = typeof a.zona === 'string' ? resolverZona(a.zona) : undefined
   if (!a.idioma || !(a.idioma in IDIOMAS) || !zona) return undefined
   const modo: Modo = a.modo === 'mini' || a.modo === 'oculto' ? a.modo : 'completo'
-  return { modo, idioma: a.idioma, zona }
+  const tema = typeof a.tema === 'string' ? resolverTema(a.tema) ?? 'default' : 'default'
+  return { modo, idioma: a.idioma, zona, tema }
 }
 
 // ───────────────────────────── Hooks ─────────────────────────────
 
 const BANDAS = [
-  { hasta: 25, icono: '☀', color: 'green' },
-  { hasta: 50, icono: '☁', color: 'green' },
-  { hasta: 75, icono: '☂', color: 'yellow' },
-  { hasta: 90, icono: '☇', color: 'red' },
-  { hasta: Infinity, icono: '↯', color: 'red' },
+  { hasta: 25, icono: '☀', nivel: 'ok' as const },
+  { hasta: 50, icono: '☁', nivel: 'ok' as const },
+  { hasta: 75, icono: '☂', nivel: 'warn' as const },
+  { hasta: 90, icono: '☇', nivel: 'bad' as const },
+  { hasta: Infinity, icono: '↯', nivel: 'bad' as const },
 ]
 
 export const register: Register = on => {
@@ -443,13 +494,14 @@ export const register: Register = on => {
     const result = await next(e)
     await $.command.register({
       name: 'usage-weather',
-      description: 'Usage weather bar: /usage-weather [timezone] [language] [full|mini|off]',
+      description: 'Usage weather bar: /usage-weather [timezone] [language] [theme] [full|mini|off]',
     })
     const guardado = ajustesValidos(await $.store.get('ajustes'))
     const inicial: Ajustes = guardado ?? {
       modo: 'completo',
       idioma: 'en',
       zona: resolverZona(zonaSistema()) ?? 'UTC',
+      tema: 'default',
     }
     await update($, ajustes, () => inicial)
     if (!guardado) {
@@ -478,11 +530,14 @@ export const register: Register = on => {
     const palabras = tokens.map(p => p.toLowerCase())
 
     if (tokens.length === 0 || palabras.some(p => PALABRAS_AYUDA.includes(p))) {
-      const ejemplos = '/usage-weather bogota es  ·  /usage-weather ja Asia/Tokyo  ·  /usage-weather mini'
+      const ejemplos = '/usage-weather bogota es  ·  /usage-weather ja Asia/Tokyo  ·  /usage-weather mini  ·  /usage-weather synthwave'
       return { text: `${await resumen($, actual)}\n${t.uso}\n${ejemplos}` }
     }
     if (palabras.some(p => PALABRAS_ZONAS.includes(p))) {
       return { text: textoZonas(t) }
+    }
+    if (palabras.some(p => PALABRAS_TEMAS.includes(p))) {
+      return { text: textoTemas() }
     }
     if (palabras.some(p => PALABRAS_IDIOMAS.includes(p))) {
       return { text: textoIdiomas() }
@@ -493,9 +548,11 @@ export const register: Register = on => {
     const siguiente: Ajustes = { ...actual }
     for (const token of tokens) {
       const modo = MODOS[token.toLowerCase()]
-      const idioma = modo ? undefined : resolverIdioma(token)
-      const zona = modo || idioma ? undefined : resolverZona(token)
+      const tema = modo ? undefined : resolverTema(token)
+      const idioma = modo || tema ? undefined : resolverIdioma(token)
+      const zona = modo || tema || idioma ? undefined : resolverZona(token)
       if (modo) siguiente.modo = modo
+      else if (tema) siguiente.tema = tema
       else if (idioma) siguiente.idioma = idioma
       else if (zona) siguiente.zona = zona
       else return { text: t.invalido(token) }
@@ -568,13 +625,17 @@ export const register: Register = on => {
 
     const ahora = todas[todas.length - 1]!
     const antes = todas.length > 1 ? todas[todas.length - 2] : undefined
+    const pal = TEMAS[aj.tema] ?? TEMAS.default
+    const nivel = (n: 'ok' | 'warn' | 'bad') => pal[n]
+    const colorUso = (pct: number) => nivel(pct < 50 ? 'ok' : pct < 80 ? 'warn' : 'bad')
     const banda = bandaPara(ahora.porcentaje)
+    const estiloBanda = nivel(banda.nivel)
     const totalEntrada = acc.entrada + acc.cacheLeida + acc.cacheEscrita
     const cachePct = totalEntrada > 0 ? Math.round((acc.cacheLeida / totalEntrada) * 100) : null
     // Main number = last turn (drops after /compact or a long pause); Σ = whole session.
     const ultimo = acc.ultimoCache ?? null
     const cachePrincipal = ultimo ?? cachePct
-    const colorCache = cachePrincipal === null ? 'gray' : cachePrincipal >= 80 ? 'green' : cachePrincipal >= 50 ? 'yellow' : 'red'
+    const estiloCache = cachePrincipal === null ? pal.neutro : nivel(cachePrincipal >= 80 ? 'ok' : cachePrincipal >= 50 ? 'warn' : 'bad')
     const delta = antes ? ahora.usd - antes.usd : 0
     const cinco = lims.find(l => l.kind === 'five_hour')
     const semana = lims.find(l => l.kind === 'seven_day')
@@ -582,13 +643,13 @@ export const register: Register = on => {
     if (aj.modo === 'mini') {
       return (
         <Box flexDirection="row" paddingX={1}>
-          <Text color={banda.color} bold>{`${banda.icono} ${ahora.porcentaje}%`}</Text>
+          <Text {...estiloBanda} bold>{`${banda.icono} ${ahora.porcentaje}%`}</Text>
           <Text dimColor>{' · '}</Text>
-          <Text color="cyan">{`$${ahora.usd.toFixed(2)}`}</Text>
+          <Text {...pal.costo}>{`$${ahora.usd.toFixed(2)}`}</Text>
           {cinco ? <Text dimColor>{' · 5h '}</Text> : null}
-          {cinco ? <Text color={colorUso(cinco.percentUsed)}>{`${Math.round(cinco.percentUsed)}%`}</Text> : null}
+          {cinco ? <Text {...colorUso(cinco.percentUsed)}>{`${Math.round(cinco.percentUsed)}%`}</Text> : null}
           {semana ? <Text dimColor>{` · ${t.semanaCorta} `}</Text> : null}
-          {semana ? <Text color={colorUso(semana.percentUsed)}>{`${Math.round(semana.percentUsed)}%`}</Text> : null}
+          {semana ? <Text {...colorUso(semana.percentUsed)}>{`${Math.round(semana.percentUsed)}%`}</Text> : null}
         </Box>
       )
     }
@@ -603,11 +664,11 @@ export const register: Register = on => {
       return (
         <Box flexDirection="row">
           <Text bold>{etiqueta(nombreLimite(l.kind, t), anchoEtiqueta)}</Text>
-          <Text color={color}>{'█'.repeat(n)}</Text>
+          <Text {...color}>{'█'.repeat(n)}</Text>
           <Text dimColor>{'░'.repeat(ANCHO_BARRA - n)}</Text>
-          <Text color={color} bold>{` ${Math.round(l.percentUsed)}%`}</Text>
+          <Text {...color} bold>{` ${Math.round(l.percentUsed)}%`}</Text>
           <Text dimColor>{cuando ? `  ↻ ${cuando}` : ''}</Text>
-          {r && columnas >= 70 ? <Text color={r.color}>{`  ${r.texto}`}</Text> : null}
+          {r && columnas >= 70 ? <Text {...nivel(r.nivel)}>{`  ${r.texto}`}</Text> : null}
         </Box>
       )
     }
@@ -615,17 +676,17 @@ export const register: Register = on => {
     return (
       <Box flexDirection="column" paddingX={1}>
         <Box flexDirection="row">
-          <Text color={banda.color} bold>{`${banda.icono} ${t.clima[banda.indice]} ${ahora.porcentaje}%`}</Text>
+          <Text {...estiloBanda} bold>{`${banda.icono} ${t.clima[banda.indice]} ${ahora.porcentaje}%`}</Text>
           <Text dimColor>{` ${corto(ahora.tokens)}/${corto(ahora.ventana)}`}</Text>
-          {columnas >= 72 ? <Text color={banda.color}>{` ${'█'.repeat(llenosCtx)}`}</Text> : null}
+          {columnas >= 72 ? <Text {...estiloBanda}>{` ${'█'.repeat(llenosCtx)}`}</Text> : null}
           {columnas >= 72 ? <Text dimColor>{'░'.repeat(ANCHO_BARRA - llenosCtx)}</Text> : null}
           <Text dimColor>{' · '}</Text>
-          <Text color="cyan" bold>{`$${ahora.usd.toFixed(2)}`}</Text>
-          {delta >= 0.005 ? <Text color="cyan">{` (+$${delta.toFixed(2)})`}</Text> : null}
+          <Text {...pal.costo} bold>{`$${ahora.usd.toFixed(2)}`}</Text>
+          {delta >= 0.005 ? <Text {...pal.costo}>{` (+$${delta.toFixed(2)})`}</Text> : null}
           <Text dimColor>{' · ⏱API '}</Text>
-          <Text color="magenta">{duracion(acc.duracionApiMs)}</Text>
+          <Text {...pal.api}>{duracion(acc.duracionApiMs)}</Text>
           <Text dimColor>{` · ${t.cache} `}</Text>
-          <Text color={colorCache}>{cachePrincipal === null ? '—' : `${cachePrincipal}%`}</Text>
+          <Text {...estiloCache}>{cachePrincipal === null ? '—' : `${cachePrincipal}%`}</Text>
           {ultimo !== null && cachePct !== null && ultimo !== cachePct ? <Text dimColor>{` Σ${cachePct}%`}</Text> : null}
         </Box>
         {cinco ? filaLimite(cinco) : null}
@@ -643,7 +704,7 @@ async function resumen($: EngineInterface, aj: Ajustes) {
   const off = offsetMs(aj.zona, ahora)
   const local = new Date(ahora + off)
   const hora = formatoHora(local.getUTCHours(), local.getUTCMinutes(), t)
-  return `${t.lblIdioma}: ${t.nombre} · ${t.lblZona}: ${aj.zona} (${etiquetaOffset(off)}, ${hora}) · ${t.lblVista}: ${t.vistas[aj.modo]}`
+  return `${t.lblIdioma}: ${t.nombre} · ${t.lblZona}: ${aj.zona} (${etiquetaOffset(off)}, ${hora}) · ${t.lblVista}: ${t.vistas[aj.modo]} · ${t.lblTema}: ${aj.tema}`
 }
 
 function porcentajeCache(u: { input_tokens?: number; cache_read_input_tokens?: number; cache_creation_input_tokens?: number } | undefined): number | null {
@@ -755,8 +816,8 @@ function textoRitmo(l: Limite, m: Muestra | undefined, ahoraMs: number, t: Texto
   if (transcurrido < RITMO_MIN_MS || subio <= 0) return null
   const faltaReinicio = Date.parse(l.resetsAt) - ahoraMs
   const llenaEn = ((100 - l.percentUsed) / subio) * transcurrido
-  if (llenaEn >= faltaReinicio) return { texto: t.ritmoOk, color: 'green' }
-  return { texto: t.llena(duracion(llenaEn)), color: llenaEn < faltaReinicio / 2 ? 'red' : 'yellow' }
+  if (llenaEn >= faltaReinicio) return { texto: t.ritmoOk, nivel: 'ok' as const }
+  return { texto: t.llena(duracion(llenaEn)), nivel: llenaEn < faltaReinicio / 2 ? ('bad' as const) : ('warn' as const) }
 }
 
 // Terminal cells a string takes: CJK and fullwidth characters take two.
@@ -785,10 +846,6 @@ function bandaPara(porcentaje: number) {
 
 function llenos(pct: number) {
   return Math.round((Math.min(Math.max(pct, 0), 100) / 100) * ANCHO_BARRA)
-}
-
-function colorUso(pct: number) {
-  return pct < 50 ? 'green' : pct < 80 ? 'yellow' : 'red'
 }
 
 // Countdown: minutes rounded up, as the desktop app shows them.

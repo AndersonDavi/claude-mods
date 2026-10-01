@@ -17,7 +17,7 @@ const USO: SessionUsage = {
   cost: { usd: 1.73 },
 }
 
-const AJUSTES = { modo: 'completo', idioma: 'es', zona: 'America/Bogota' }
+const AJUSTES = { modo: 'completo', idioma: 'es', zona: 'America/Bogota', tema: 'default' }
 
 const PROPS = (columnas: number) =>
   ({ hasSurvey: false, isWorking: false, maxRows: 10, bodyColumns: columnas }) as unknown as RenderPropsOf['AbovePrompt']
@@ -235,5 +235,27 @@ describe('usage-weather', () => {
     const texto = (await comando($, 'help')).text
     expect(texto).toContain('Idioma: Español')
     expect(texto).toContain('/usage-weather bogota es')
+  })
+
+  test('switches theme by word, lists themes, and keeps drawing', async ($, on) => {
+    const avisos: string[] = []
+    motor(on, { actual: USO }, avisos)
+    await $.session.start(INICIO)
+
+    expect((await comando($, '')).text).toContain('Tema: default')
+    expect((await comando($, 'synthwave')).text).toContain('Tema: synthwave')
+    expect((await comando($, 'themes')).text).toContain('dracula')
+    // Language and theme in the same command, any order.
+    const doble = (await comando($, 'neon en')).text
+    expect(doble).toContain('Theme: neon')
+    expect(doble).toContain('Language: English')
+    expect((await comando($, 'rainbow')).text).toContain('rainbow')
+
+    for (const tema of ['light', 'mono', 'contrast', 'violet', 'ocean', 'sunset', 'forest', 'candy', 'dracula']) {
+      await comando($, tema)
+      const ui = await dibujar($)
+      expect(await ui.find({ type: 'Text', text: '$1.73' })).toBeDefined()
+      expect(await ui.find({ type: 'Text', text: '34%' })).toBeDefined()
+    }
   })
 })
