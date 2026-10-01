@@ -82,6 +82,8 @@ Missing yours? A language is one table entry: see [CONTRIBUTING](../CONTRIBUTING
 /usage-weather synthwave es
 ```
 
+![The 12 themes, each with the bar at three levels: Showers 62%, 5h limit at 35% and weekly limit at 82%](../assets/usage-weather/themes.png)
+
 The `test` word (also `demo` or `preview`) steps the bar through five fake readings, 2.5 s each, from calm to nearly full, so you can see every color of the current theme; then it returns to your real numbers. Try `/usage-weather neon test`.
 
 ### Time zones
