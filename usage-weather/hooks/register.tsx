@@ -492,8 +492,8 @@ const BANDAS = [
   { hasta: 25, icono: '☀', nivel: 'ok' as const },
   { hasta: 50, icono: '☁', nivel: 'ok' as const },
   { hasta: 75, icono: '☂', nivel: 'warn' as const },
-  { hasta: 90, icono: '☇', nivel: 'bad' as const },
-  { hasta: Infinity, icono: '↯', nivel: 'bad' as const },
+  { hasta: 90, icono: '⚡', nivel: 'bad' as const },
+  { hasta: Infinity, icono: '🔥', nivel: 'bad' as const },
 ]
 
 export const register: Register = on => {
