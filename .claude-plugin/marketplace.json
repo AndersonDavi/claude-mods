@@ -1,0 +1,12 @@
+{
+  "name": "andersondavi-mods",
+  "owner": { "name": "AndersonDavi" },
+  "metadata": { "description": "Mods for Claude Code by AndersonDavi" },
+  "plugins": [
+    {
+      "name": "usage-weather",
+      "source": "./usage-weather",
+      "description": "A weather forecast for your Claude Code usage: context, cost, cache and plan limits above the prompt. 8 languages, any time zone."
+    }
+  ]
+}

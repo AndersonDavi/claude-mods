@@ -1,0 +1,11 @@
+claude-mods
+Copyright 2026 AndersonDavi
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+usage-weather is inspired by "token-weather", an example mod for Claude Code
+by Claude Code DevRel, Copyright 2026 Anthropic PBC, licensed under the
+Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0).
+usage-weather keeps the idea of a context-window forecast above the prompt
+and the forecast bands; the code is new and adds cost, cache, plan limits,
+alerts, languages and time zones.
