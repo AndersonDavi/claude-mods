@@ -434,7 +434,7 @@ const PASOS_DEMO = [
   { pct: 78, usd: 7.8, cinco: 82, semana: 79, cache: 45 },
   { pct: 94, usd: 12.9, cinco: 96, semana: 93, cache: 8 },
 ]
-const DEMO_PASO_MS = 2500
+const DEMO_PASO_MS = 1000
 
 // ───────────────────────────── Themes ─────────────────────────────
 

@@ -77,7 +77,7 @@ Las etiquetas en chino, japonés y coreano se alinean según su ancho real. Espa
 
 ![Los 12 temas, cada uno con la barra en tres niveles: Lluvia 62%, límite de 5 horas al 35% y semanal al 82%](../assets/usage-weather/themes.png)
 
-La palabra `test` (o `demo`, `preview`, `probar`) recorre la barra por cinco lecturas falsas, 2,5 s cada una, de calma a casi lleno, para ver todos los colores del tema actual; luego vuelve a tus números reales. Prueba `/usage-weather neon test`.
+La palabra `test` (o `demo`, `preview`, `probar`) recorre la barra por cinco lecturas falsas, 1 s cada una, de calma a casi lleno, para ver todos los colores del tema actual; luego vuelve a tus números reales. Prueba `/usage-weather neon test`.
 
 ### Zonas horarias
 
