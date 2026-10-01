@@ -536,6 +536,7 @@ export const register: Register = on => {
       cacheLeida: a.cacheLeida + (u?.cache_read_input_tokens ?? 0),
       cacheEscrita: a.cacheEscrita + (u?.cache_creation_input_tokens ?? 0),
       turnos: a.turnos + (e.agentId ? 0 : 1),
+      ultimoCache: e.agentId ? a.ultimoCache : porcentajeCache(u),
     }))
     await guardarSesion($, nuevo)
     if (!e.agentId) {
@@ -570,7 +571,10 @@ export const register: Register = on => {
     const banda = bandaPara(ahora.porcentaje)
     const totalEntrada = acc.entrada + acc.cacheLeida + acc.cacheEscrita
     const cachePct = totalEntrada > 0 ? Math.round((acc.cacheLeida / totalEntrada) * 100) : null
-    const colorCache = cachePct === null ? 'gray' : cachePct >= 80 ? 'green' : cachePct >= 50 ? 'yellow' : 'red'
+    // Main number = last turn (drops after /compact or a long pause); Σ = whole session.
+    const ultimo = acc.ultimoCache ?? null
+    const cachePrincipal = ultimo ?? cachePct
+    const colorCache = cachePrincipal === null ? 'gray' : cachePrincipal >= 80 ? 'green' : cachePrincipal >= 50 ? 'yellow' : 'red'
     const delta = antes ? ahora.usd - antes.usd : 0
     const cinco = lims.find(l => l.kind === 'five_hour')
     const semana = lims.find(l => l.kind === 'seven_day')
@@ -621,7 +625,8 @@ export const register: Register = on => {
           <Text dimColor>{' · ⏱API '}</Text>
           <Text color="magenta">{duracion(acc.duracionApiMs)}</Text>
           <Text dimColor>{` · ${t.cache} `}</Text>
-          <Text color={colorCache}>{cachePct === null ? '—' : `${cachePct}%`}</Text>
+          <Text color={colorCache}>{cachePrincipal === null ? '—' : `${cachePrincipal}%`}</Text>
+          {ultimo !== null && cachePct !== null && ultimo !== cachePct ? <Text dimColor>{` Σ${cachePct}%`}</Text> : null}
         </Box>
         {cinco ? filaLimite(cinco) : null}
         {semana ? filaLimite(semana) : null}
@@ -639,6 +644,11 @@ async function resumen($: EngineInterface, aj: Ajustes) {
   const local = new Date(ahora + off)
   const hora = formatoHora(local.getUTCHours(), local.getUTCMinutes(), t)
   return `${t.lblIdioma}: ${t.nombre} · ${t.lblZona}: ${aj.zona} (${etiquetaOffset(off)}, ${hora}) · ${t.lblVista}: ${t.vistas[aj.modo]}`
+}
+
+function porcentajeCache(u: { input_tokens?: number; cache_read_input_tokens?: number; cache_creation_input_tokens?: number } | undefined): number | null {
+  const total = (u?.input_tokens ?? 0) + (u?.cache_read_input_tokens ?? 0) + (u?.cache_creation_input_tokens ?? 0)
+  return total > 0 ? Math.round(((u?.cache_read_input_tokens ?? 0) / total) * 100) : null
 }
 
 async function tomarLectura($: EngineInterface) {

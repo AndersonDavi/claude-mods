@@ -5,6 +5,8 @@ export type Acumulado = {
   entrada: number
   cacheLeida: number
   cacheEscrita: number
+  /** Cache hit % of the last main turn (null if unknown). */
+  ultimoCache?: number | null
   turnos: number
 }
 // First reading of a limit window, to work out the pace of use.

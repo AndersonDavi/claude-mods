@@ -1,6 +1,6 @@
 {
   "name": "usage-weather",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "A weather forecast for your Claude Code usage: context, cost, cache and plan limits above the prompt. 8 languages, any time zone.",
   "author": { "name": "AndersonDavi" },
   "homepage": "https://github.com/AndersonDavi/claude-mods/tree/main/usage-weather",

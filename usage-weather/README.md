@@ -14,7 +14,7 @@ Español: [README.es.md](README.es.md)
 
 | Row | Content |
 |---|---|
-| 1 | Context forecast (Clear < 25%, Cloudy < 50%, Showers < 75%, Storm < 90%, Compact soon ≥ 90%), tokens used / window and a real progress bar; equivalent API cost and the last turn's cost; approximate API time; prompt-cache hit rate (green ≥ 80%, yellow ≥ 50%, red below). |
+| 1 | Context forecast (Clear < 25%, Cloudy < 50%, Showers < 75%, Storm < 90%, Compact soon ≥ 90%), tokens used / window and a real progress bar; equivalent API cost and the last turn's cost; approximate API time; prompt-cache hit rate of the last turn, with the whole-session rate after Σ when it differs (it drops after /compact or a pause, which is when it costs money; green ≥ 80%, yellow ≥ 50%, red below). |
 | 2 | 5-hour session limit: bar, percentage, time left and reset time. |
 | 3 | Weekly limit: bar, percentage, reset day and time. |
 

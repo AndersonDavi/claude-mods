@@ -14,7 +14,7 @@ English: [README.md](README.md)
 
 | Fila | Contenido |
 |---|---|
-| 1 | Pronóstico del contexto (Despejado < 25%, Nublado < 50%, Lluvia < 75%, Tormenta < 90%, Compacta ya ≥ 90%), tokens usados / ventana y una barra de progreso real; costo equivalente en API y lo que costó el último turno; tiempo aproximado en API; porcentaje de caché (verde ≥ 80%, amarillo ≥ 50%, rojo por debajo). |
+| 1 | Pronóstico del contexto (Despejado < 25%, Nublado < 50%, Lluvia < 75%, Tormenta < 90%, Compacta ya ≥ 90%), tokens usados / ventana y una barra de progreso real; costo equivalente en API y lo que costó el último turno; tiempo aproximado en API; porcentaje de caché del último turno, y tras Σ el de toda la sesión si es distinto (baja tras /compact o una pausa, que es cuando cuesta plata; verde ≥ 80%, amarillo ≥ 50%, rojo por debajo). |
 | 2 | Límite de sesión de 5 h: barra, porcentaje, tiempo restante y hora de reinicio. |
 | 3 | Límite semanal: barra, porcentaje, día y hora de reinicio. |
 
