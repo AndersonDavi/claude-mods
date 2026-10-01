@@ -30,6 +30,8 @@ const lecturas = atom({ plugin: 'usage-weather', key: 'lecturas' } as const, [] 
 const limites = atom({ plugin: 'usage-weather', key: 'limites' } as const, [] as Limite[])
 const acumulado = atom({ plugin: 'usage-weather', key: 'acumulado' } as const, CERO)
 const avisados = atom({ plugin: 'usage-weather', key: 'avisados' } as const, [] as string[])
+// Preview of the theme: -1 = off, otherwise the step being shown.
+const demo = atom({ plugin: 'usage-weather', key: 'demo' } as const, -1)
 const ritmo = atom({ plugin: 'usage-weather', key: 'ritmo' } as const, {} as Record<string, Muestra>)
 const ajustes = atom({ plugin: 'usage-weather', key: 'ajustes' } as const, AJUSTES_INICIALES)
 
@@ -283,6 +285,7 @@ for (const idioma of CODIGOS) {
   }
 }
 const PALABRAS_TEMAS = ['themes', 'theme', 'temas', 'tema', 'colors', 'colours', 'colores']
+const PALABRAS_DEMO = ['test', 'demo', 'preview', 'probar', 'prueba']
 const PALABRAS_AYUDA = ['help', 'ayuda', 'ajuda', 'aide', 'hilfe', '?', '-h', '--help']
 const PALABRAS_ZONAS = ['zones', 'zone', 'zonas', 'zona', 'tz', 'timezones', 'timezone']
 const PALABRAS_IDIOMAS = ['languages', 'language', 'idiomas', 'idioma', 'lang', 'langs']
@@ -423,6 +426,16 @@ function textoIdiomas() {
   return CODIGOS.map(c => `${c}  ${IDIOMAS[c].nombre}`).join('\n')
 }
 
+// Fake readings the preview steps through, from calm to nearly full.
+const PASOS_DEMO = [
+  { pct: 8, usd: 0.4, cinco: 5, semana: 12, cache: 95 },
+  { pct: 30, usd: 1.73, cinco: 35, semana: 34, cache: 92 },
+  { pct: 55, usd: 3.9, cinco: 60, semana: 58, cache: 70 },
+  { pct: 78, usd: 7.8, cinco: 82, semana: 79, cache: 45 },
+  { pct: 94, usd: 12.9, cinco: 96, semana: 93, cache: 8 },
+]
+const DEMO_PASO_MS = 2500
+
 // ───────────────────────────── Themes ─────────────────────────────
 
 // How one role is drawn. `color` is a raw color (hex) or an ANSI name; mono
@@ -526,8 +539,15 @@ export const register: Register = on => {
   on('command.run', { command: 'usage-weather' }, async ($, e) => {
     const actual = await read($, ajustes)
     const t = IDIOMAS[actual.idioma]
-    const tokens = e.args.trim().split(/\s+/).filter(Boolean)
+    const todos = e.args.trim().split(/\s+/).filter(Boolean)
+    const pideDemo = todos.some(p => PALABRAS_DEMO.includes(p.toLowerCase()))
+    const tokens = todos.filter(p => !PALABRAS_DEMO.includes(p.toLowerCase()))
     const palabras = tokens.map(p => p.toLowerCase())
+
+    if (pideDemo && tokens.length === 0) {
+      await empezarDemo($)
+      return { text: `${t.lblTema}: ${actual.tema} · demo ${PASOS_DEMO.length} × ${DEMO_PASO_MS / 1000}s` }
+    }
 
     if (tokens.length === 0 || palabras.some(p => PALABRAS_AYUDA.includes(p))) {
       const ejemplos = '/usage-weather bogota es  ·  /usage-weather ja Asia/Tokyo  ·  /usage-weather mini  ·  /usage-weather synthwave'
@@ -559,6 +579,7 @@ export const register: Register = on => {
     }
     await update($, ajustes, () => siguiente)
     await $.store.set('ajustes', siguiente)
+    if (pideDemo) await empezarDemo($)
     return { text: `✔ ${await resumen($, siguiente)}` }
   })
 
@@ -612,26 +633,36 @@ export const register: Register = on => {
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
     const todas = await read($, lecturas)
     const aj = await read($, ajustes)
-    if (e.props.hasSurvey || todas.length === 0 || aj.modo === 'oculto') {
+    const paso = await read($, demo)
+    const enDemo = paso >= 0 && paso < PASOS_DEMO.length
+    if (e.props.hasSurvey || (todas.length === 0 && !enDemo) || (aj.modo === 'oculto' && !enDemo)) {
       return next(e)
     }
     const t = IDIOMAS[aj.idioma]
-    const lims = await read($, limites)
-    const acc = await read($, acumulado)
-    const muestras = await read($, ritmo)
     const { Box, Text } = $.ui.resolve(e)
     const ahoraMs = await $.clock.now()
     const columnas = e.props.bodyColumns ?? 80
+    const falso = enDemo ? PASOS_DEMO[paso]! : undefined
+    const lims: readonly Limite[] = falso
+      ? [
+          { kind: 'five_hour', percentUsed: falso.cinco, resetsAt: new Date(ahoraMs + 200 * 60_000).toISOString() },
+          { kind: 'seven_day', percentUsed: falso.semana, resetsAt: new Date(ahoraMs + 2 * 86_400_000).toISOString() },
+        ]
+      : await read($, limites)
+    const acc = falso ? { ...(await read($, acumulado)), ultimoCache: falso.cache } : await read($, acumulado)
+    const muestras = falso ? {} : await read($, ritmo)
 
-    const ahora = todas[todas.length - 1]!
-    const antes = todas.length > 1 ? todas[todas.length - 2] : undefined
+    const ahora: Lectura = falso
+      ? { tokens: falso.pct * 10_000, ventana: 1_000_000, porcentaje: falso.pct, usd: falso.usd }
+      : todas[todas.length - 1]!
+    const antes = !falso && todas.length > 1 ? todas[todas.length - 2] : undefined
     const pal = TEMAS[aj.tema] ?? TEMAS.default
     const nivel = (n: 'ok' | 'warn' | 'bad') => pal[n]
     const colorUso = (pct: number) => nivel(pct < 50 ? 'ok' : pct < 80 ? 'warn' : 'bad')
     const banda = bandaPara(ahora.porcentaje)
     const estiloBanda = nivel(banda.nivel)
     const totalEntrada = acc.entrada + acc.cacheLeida + acc.cacheEscrita
-    const cachePct = totalEntrada > 0 ? Math.round((acc.cacheLeida / totalEntrada) * 100) : null
+    const cachePct = falso ? 99 : totalEntrada > 0 ? Math.round((acc.cacheLeida / totalEntrada) * 100) : null
     // Main number = last turn (drops after /compact or a long pause); Σ = whole session.
     const ultimo = acc.ultimoCache ?? null
     const cachePrincipal = ultimo ?? cachePct
@@ -710,6 +741,23 @@ async function resumen($: EngineInterface, aj: Ajustes) {
 function porcentajeCache(u: { input_tokens?: number; cache_read_input_tokens?: number; cache_creation_input_tokens?: number } | undefined): number | null {
   const total = (u?.input_tokens ?? 0) + (u?.cache_read_input_tokens ?? 0) + (u?.cache_creation_input_tokens ?? 0)
   return total > 0 ? Math.round(((u?.cache_read_input_tokens ?? 0) / total) * 100) : null
+}
+
+// Steps the preview every few seconds, then goes back to the real readings.
+let relojDemo: { cancel: () => void } | undefined
+
+async function empezarDemo($: EngineInterface) {
+  relojDemo?.cancel()
+  await update($, demo, () => 0)
+  void $.ui.invalidate('ui.render')
+  relojDemo = $.clock.every(DEMO_PASO_MS, () => {
+    void (async () => {
+      const paso = (await read($, demo)) + 1
+      await update($, demo, () => (paso >= PASOS_DEMO.length ? -1 : paso))
+      if (paso >= PASOS_DEMO.length) relojDemo?.cancel()
+      void $.ui.invalidate('ui.render')
+    })()
+  })
 }
 
 async function tomarLectura($: EngineInterface) {

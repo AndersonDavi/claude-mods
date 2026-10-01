@@ -27,6 +27,7 @@ declare module 'claude-code' {
       avisados: string[]
       ritmo: Record<string, Muestra>
       ajustes: Ajustes
+      demo: number
     }
   }
 }

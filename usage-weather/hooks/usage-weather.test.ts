@@ -258,4 +258,14 @@ describe('usage-weather', () => {
       expect(await ui.find({ type: 'Text', text: '34%' })).toBeDefined()
     }
   })
+
+  test('the test word previews the theme with fake readings', async ($, on) => {
+    motor(on, { actual: USO }, [])
+    await $.session.start(INICIO)
+    const salida = (await comando($, 'neon test')).text
+    expect(salida).toContain('Tema: neon')
+    const ui = await dibujar($)
+    expect(await ui.find({ type: 'Text', text: 'Despejado 8%' })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: '$0.40' })).toBeDefined()
+  })
 })

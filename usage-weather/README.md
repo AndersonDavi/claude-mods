@@ -51,6 +51,7 @@ Everything is one command. Words can come in any order; one unknown word changes
 /usage-weather synthwave             color theme
 /usage-weather mini                  one-row view (full | mini | off)
 /usage-weather themes                list color themes
+/usage-weather test                  preview the theme: fake readings from calm to nearly full
 /usage-weather zones                 list time zones
 /usage-weather languages             list languages
 ```
@@ -80,6 +81,8 @@ Missing yours? A language is one table entry: see [CONTRIBUTING](../CONTRIBUTING
 /usage-weather neon
 /usage-weather synthwave es
 ```
+
+The `test` word (also `demo` or `preview`) steps the bar through five fake readings, 2.5 s each, from calm to nearly full, so you can see every color of the current theme; then it returns to your real numbers. Try `/usage-weather neon test`.
 
 ### Time zones
 

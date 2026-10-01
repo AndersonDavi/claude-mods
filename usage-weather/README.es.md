@@ -53,6 +53,7 @@ Todo es un solo comando. Las palabras pueden ir en cualquier orden; si una no se
 /usage-weather zonas                 lista de zonas horarias
 /usage-weather idiomas               lista de idiomas
 /usage-weather temas                 lista de temas de color
+/usage-weather test                  vista previa del tema: lecturas falsas de calma a casi lleno
 ```
 
 La configuración se guarda y se recuerda entre sesiones. El idioma por defecto es inglés; la zona horaria se detecta del sistema. La primera vez, un mensaje corto explica cómo cambiarlos (y sugiere el idioma de tu sistema si es uno de los ocho).
@@ -73,6 +74,8 @@ Las etiquetas en chino, japonés y coreano se alinean según su ancho real. Espa
 /usage-weather neon
 /usage-weather synthwave es
 ```
+
+La palabra `test` (o `demo`, `preview`, `probar`) recorre la barra por cinco lecturas falsas, 2,5 s cada una, de calma a casi lleno, para ver todos los colores del tema actual; luego vuelve a tus números reales. Prueba `/usage-weather neon test`.
 
 ### Zonas horarias
 
