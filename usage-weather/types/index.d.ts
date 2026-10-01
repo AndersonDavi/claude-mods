@@ -14,8 +14,8 @@ export type Muestra = { resetsAt: string; t: number; pct: number }
 export type Modo = 'completo' | 'mini' | 'oculto'
 export type Idioma = 'es' | 'en' | 'pt' | 'fr' | 'de' | 'zh' | 'ja' | 'ko'
 export type Tema =
-  | 'default' | 'light' | 'mono' | 'contrast' | 'synthwave' | 'neon'
-  | 'violet' | 'ocean' | 'sunset' | 'forest' | 'candy' | 'dracula'
+  | 'default' | 'mono' | 'contrast' | 'synthwave' | 'neon'
+  | 'violet' | 'ocean' | 'sunset' | 'forest' | 'candy' | 'catppuccin' | 'dracula'
 export type Ajustes = { modo: Modo; idioma: Idioma; zona: string; tema: Tema }
 
 declare module 'claude-code' {

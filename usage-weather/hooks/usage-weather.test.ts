@@ -251,7 +251,7 @@ describe('usage-weather', () => {
     expect(doble).toContain('Language: English')
     expect((await comando($, 'rainbow')).text).toContain('rainbow')
 
-    for (const tema of ['light', 'mono', 'contrast', 'violet', 'ocean', 'sunset', 'forest', 'candy', 'dracula']) {
+    for (const tema of ['mono', 'contrast', 'violet', 'ocean', 'sunset', 'forest', 'candy', 'catppuccin', 'dracula']) {
       await comando($, tema)
       const ui = await dibujar($)
       expect(await ui.find({ type: 'Text', text: '$1.73' })).toBeDefined()

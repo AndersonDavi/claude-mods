@@ -68,7 +68,7 @@ Las etiquetas en chino, japonés y coreano se alinean según su ancho real. Espa
 
 ### Temas
 
-12 temas de color, que se guardan como el resto de la configuración: `default` (los colores de tu terminal), `light` (para fondos claros), `mono` (sin color: negrita e inversión), `contrast` (apto para daltonismo), `synthwave`, `neon`, `violet`, `ocean`, `sunset`, `forest`, `candy` y `dracula`. Usan colores de 24 bits; en una terminal que no los soporte se aproximan.
+12 temas de color, que se guardan como el resto de la configuración: `default` (los colores de tu terminal), `mono` (sin color: negrita e inversión), `contrast` (apto para daltonismo), `synthwave`, `neon`, `violet`, `ocean`, `sunset`, `forest`, `candy`, `catppuccin` y `dracula`. Usan colores de 24 bits; en una terminal que no los soporte se aproximan.
 
 ```text
 /usage-weather neon

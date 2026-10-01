@@ -450,7 +450,6 @@ const paleta = (ok: string, warn: string, bad: string, costo: string, api: strin
 // The first theme uses the terminal's own ANSI colors, so it follows its palette.
 const TEMAS: Record<Tema, Paleta> = {
   default: paleta('green', 'yellow', 'red', 'cyan', 'magenta'),
-  light: paleta('#0a7d2c', '#9a5b00', '#c4001a', '#0b6a8a', '#8a2a9e', '#666666'),
   mono: {
     ok: {}, warn: { bold: true }, bad: { bold: true, inverse: true }, costo: { bold: true }, api: {}, neutro: {},
   },
@@ -463,6 +462,7 @@ const TEMAS: Record<Tema, Paleta> = {
   sunset: paleta('#ffd166', '#ff9a3c', '#ef476f', '#ffb4a2', '#c77dff', '#a8878a'),
   forest: paleta('#8bd450', '#e6c94a', '#e5603f', '#5fc9a0', '#b6a06a', '#7e8f7a'),
   candy: paleta('#a8e6cf', '#ffd3b6', '#ff8b94', '#a0d8ef', '#d4a5ff', '#b0a8b9'),
+  catppuccin: paleta('#a6e3a1', '#f9e2af', '#f38ba8', '#89dceb', '#cba6f7', '#6c7086'),
   dracula: paleta('#50fa7b', '#f1fa8c', '#ff5555', '#8be9fd', '#bd93f9', '#6272a4'),
 }
 const NOMBRES_TEMAS = Object.keys(TEMAS) as Tema[]

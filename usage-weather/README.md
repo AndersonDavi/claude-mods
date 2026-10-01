@@ -75,7 +75,7 @@ Missing yours? A language is one table entry: see [CONTRIBUTING](../CONTRIBUTING
 
 ### Themes
 
-12 color themes, saved like the other settings: `default` (your terminal's own colors), `light` (for light backgrounds), `mono` (no color: weight and inversion), `contrast` (color-blind safe), `synthwave`, `neon`, `violet`, `ocean`, `sunset`, `forest`, `candy`, `dracula`. Themes use 24-bit colors; on a terminal without them the nearest colors are used.
+12 color themes, saved like the other settings: `default` (your terminal's own colors), `mono` (no color: weight and inversion), `contrast` (color-blind safe), `synthwave`, `neon`, `violet`, `ocean`, `sunset`, `forest`, `candy`, `catppuccin`, `dracula`. Themes use 24-bit colors; on a terminal without them the nearest colors are used.
 
 ```text
 /usage-weather neon
