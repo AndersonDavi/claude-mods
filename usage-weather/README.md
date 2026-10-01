@@ -75,14 +75,14 @@ Missing yours? A language is one table entry: see [CONTRIBUTING](../CONTRIBUTING
 
 ### Themes
 
-12 color themes, saved like the other settings: `default` (your terminal's own colors), `mono` (no color: weight and inversion), `contrast` (color-blind safe), `synthwave`, `neon`, `violet`, `ocean`, `sunset`, `forest`, `candy`, `catppuccin`, `dracula`. Themes use 24-bit colors; on a terminal without them the nearest colors are used.
+13 color themes, saved like the other settings: `default` (your terminal's own colors), `mono` (no color: weight and inversion), `contrast` (color-blind safe), `synthwave`, `neon`, `violet`, `ocean`, `sunset`, `forest`, `candy`, `claude` (Anthropic's orange, blue and green), `catppuccin`, `dracula`. Themes use 24-bit colors; on a terminal without them the nearest colors are used.
 
 ```text
 /usage-weather neon
 /usage-weather synthwave es
 ```
 
-![The 12 themes, each with the bar at three levels: Showers 62%, 5h limit at 35% and weekly limit at 82%](../assets/usage-weather/themes.png)
+![The 13 themes, each with the bar at three levels: Showers 62%, 5h limit at 35% and weekly limit at 82%](../assets/usage-weather/themes.png)
 
 The `test` word (also `demo` or `preview`) steps the bar through five fake readings, 1 s each, from calm to nearly full, so you can see every color of the current theme; then it returns to your real numbers. Try `/usage-weather neon test`.
 

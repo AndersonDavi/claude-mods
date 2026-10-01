@@ -68,14 +68,14 @@ Las etiquetas en chino, japonés y coreano se alinean según su ancho real. Espa
 
 ### Temas
 
-12 temas de color, que se guardan como el resto de la configuración: `default` (los colores de tu terminal), `mono` (sin color: negrita e inversión), `contrast` (apto para daltonismo), `synthwave`, `neon`, `violet`, `ocean`, `sunset`, `forest`, `candy`, `catppuccin` y `dracula`. Usan colores de 24 bits; en una terminal que no los soporte se aproximan.
+13 temas de color, que se guardan como el resto de la configuración: `default` (los colores de tu terminal), `mono` (sin color: negrita e inversión), `contrast` (apto para daltonismo), `synthwave`, `neon`, `violet`, `ocean`, `sunset`, `forest`, `candy`, `claude` (naranja, azul y verde de Anthropic), `catppuccin` y `dracula`. Usan colores de 24 bits; en una terminal que no los soporte se aproximan.
 
 ```text
 /usage-weather neon
 /usage-weather synthwave es
 ```
 
-![Los 12 temas, cada uno con la barra en tres niveles: Lluvia 62%, límite de 5 horas al 35% y semanal al 82%](../assets/usage-weather/themes.png)
+![Los 13 temas, cada uno con la barra en tres niveles: Lluvia 62%, límite de 5 horas al 35% y semanal al 82%](../assets/usage-weather/themes.png)
 
 La palabra `test` (o `demo`, `preview`, `probar`) recorre la barra por cinco lecturas falsas, 1 s cada una, de calma a casi lleno, para ver todos los colores del tema actual; luego vuelve a tus números reales. Prueba `/usage-weather neon test`.
 
